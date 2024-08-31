@@ -4,13 +4,14 @@ import type { IDL } from '@dfinity/candid';
 
 export interface Comment {
   'content' : string,
-  'author' : [] | [string],
+  'username' : string,
   'timestamp' : bigint,
 }
 export interface Photo {
   'id' : bigint,
   'url' : string,
   'title' : string,
+  'username' : string,
   'likes' : bigint,
   'timestamp' : bigint,
   'category' : string,
@@ -21,9 +22,13 @@ export type Result = { 'ok' : null } |
 export type Result_1 = { 'ok' : bigint } |
   { 'err' : string };
 export interface _SERVICE {
-  'addComment' : ActorMethod<[bigint, string], Result>,
-  'addPhoto' : ActorMethod<[string, string, string], Result_1>,
+  'addComment' : ActorMethod<[bigint, string, string], Result>,
+  'addPhoto' : ActorMethod<
+    [string, string, string, Uint8Array | number[]],
+    Result_1
+  >,
   'getPhotos' : ActorMethod<[], Array<Photo>>,
+  'getPhotosByCategory' : ActorMethod<[string], Array<Photo>>,
   'likePhoto' : ActorMethod<[bigint], Result>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

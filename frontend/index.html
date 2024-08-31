@@ -1,13 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pixel - Photo Sharing</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #fff;
+            color: #000;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            max-width: 935px;
+            margin: 0 auto;
+            padding-top: 44px;
+        }
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #dbdbdb;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            display: flex;
+            align-items: center;
+        }
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="%23000" stroke-width="2" d="M21 3H3v18h18V3zM21 11H3M11 21V3"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .left-menu {
+            width: 215px;
+            padding: 20px;
+            position: fixed;
+            height: calc(100vh - 44px);
+            border-right: 1px solid #dbdbdb;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .menu-item:hover {
+            background-color: #fafafa;
+        }
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+        .feed {
+            flex-grow: 1;
+            margin-left: 255px;
+            padding: 20px;
+        }
+        .post {
+            background-color: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            margin-bottom: 60px;
+        }
+        .post-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .post-header img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        .post-header .username {
+            font-weight: 600;
+        }
+        .category-tag {
+            margin-left: auto;
+            background-color: #efefef;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .post-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .post-actions {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 16px;
+        }
+        .action-icon {
+            width: 24px;
+            height: 24px;
+        }
+        .post-likes {
+            font-weight: 600;
+        }
+        .post-caption {
+            padding: 0 16px 16px;
+        }
+        .comments {
+            padding: 0 16px;
+        }
+        .comment {
+            margin-bottom: 8px;
+        }
+        .comment-form {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid #dbdbdb;
+        }
+        .comment-input {
+            flex-grow: 1;
+            border: none;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .comment-submit {
+            background: none;
+            border: none;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .post-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+        }
+        .upload-form input,
+        .upload-form select {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+        }
+        .upload-form button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-form button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            Pixel
+        </div>
+    </header>
+    <div class="container">
+        <nav class="left-menu">
+            <div class="menu-item" data-category="all">
+                <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5z" fill="none" stroke="#000" stroke-width="2"/></svg>
+                All
+            </div>
+            <div class="menu-item" data-category="Travel">
+                <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 3H3v18h18V3zm-2 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z" fill="none" stroke="#000" stroke-width="2"/></svg>
+                Travel
+            </div>
+            <div class="menu-item" data-category="People">
+                <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="none" stroke="#000" stroke-width="2"/></svg>
+                People
+            </div>
+            <div class="menu-item" data-category="Food">
+                <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z" fill="none" stroke="#000" stroke-width="2"/></svg>
+                Food
+            </div>
+            <div class="menu-item" data-category="Sports">
+                <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 1A4.5 4.5 0 0010 5.5V9H3v6h1.5v7h15v-7H21V9h-3V5.5A4.5 4.5 0 0014.5 1zm0 2c1.4 0 2.5 1.1 2.5 2.5V9h-5V5.5C12 4.1 13.1 3 14.5 3z" fill="none" stroke="#000" stroke-width="2"/></svg>
+                Sports
+            </div>
+        </nav>
+        <div class="feed" id="feed">
+            <!-- Posts will be dynamically added here -->
+        </div>
+    </div>
+
+    <button class="post-btn" id="postBtn">+</button>
+
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Upload a Photo</h2>
+            <form class="upload-form" id="uploadForm">
+                <input type="file" id="photoUpload" accept="image/*" required>
+                <input type="text" id="photoTitle" placeholder="Enter photo title" required>
+                <select id="photoCategory" required>
+                    <option value="">Select a category</option>
+                    <option value="Travel">Travel</option>
+                    <option value="People">People</option>
+                    <option value="Food">Food</option>
+                    <option value="Sports">Sports</option>
+                </select>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://sdk.dfinity.org/js/dfinity.js"></script>
+    <script src="/index.js"></script>
+</body>
 </html>

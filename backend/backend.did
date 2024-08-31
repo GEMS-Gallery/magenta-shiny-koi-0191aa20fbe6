@@ -17,16 +17,18 @@ type Photo =
    timestamp: int;
    title: text;
    url: text;
+   username: text;
  };
 type Comment = 
  record {
-   author: opt text;
    content: text;
    timestamp: int;
+   username: text;
  };
 service : {
-  addComment: (nat, text) -> (Result);
-  addPhoto: (text, text, text) -> (Result_1);
+  addComment: (nat, text, text) -> (Result);
+  addPhoto: (text, text, text, blob) -> (Result_1);
   getPhotos: () -> (vec Photo) query;
+  getPhotosByCategory: (text) -> (vec Photo) query;
   likePhoto: (nat) -> (Result);
 }

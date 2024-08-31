@@ -9,11 +9,13 @@ import Time "mo:base/Time";
 import Result "mo:base/Result";
 import Option "mo:base/Option";
 import Int "mo:base/Int";
+import Blob "mo:base/Blob";
 
 actor {
   // Types
   type Photo = {
     id: Nat;
+    username: Text;
     title: Text;
     category: Text;
     url: Text;
@@ -23,7 +25,7 @@ actor {
   };
 
   type Comment = {
-    author: ?Text;
+    username: Text;
     content: Text;
     timestamp: Int;
   };
@@ -44,12 +46,21 @@ actor {
     })
   };
 
-  public func addPhoto(title: Text, category: Text, url: Text) : async Result.Result<Nat, Text> {
+  public query func getPhotosByCategory(category: Text) : async [Photo] {
+    Array.filter(photos, func (p: Photo) : Bool { p.category == category })
+  };
+
+  public func addPhoto(username: Text, title: Text, category: Text, imageBlob: Blob) : async Result.Result<Nat, Text> {
+    // In a real-world scenario, you would save the imageBlob and generate a URL
+    // For this example, we'll just use a placeholder URL
+    let imageUrl = "/api/placeholder/614/614";
+    
     let newPhoto : Photo = {
       id = nextPhotoId;
+      username = username;
       title = title;
       category = category;
-      url = url;
+      url = imageUrl;
       likes = 0;
       comments = [];
       timestamp = Time.now();
@@ -65,6 +76,7 @@ actor {
       case (?photo) {
         let updatedPhoto = {
           id = photo.id;
+          username = photo.username;
           title = photo.title;
           category = photo.category;
           url = photo.url;
@@ -80,17 +92,18 @@ actor {
     }
   };
 
-  public func addComment(photoId: Nat, content: Text) : async Result.Result<(), Text> {
+  public func addComment(photoId: Nat, username: Text, content: Text) : async Result.Result<(), Text> {
     switch (findPhoto(photoId)) {
       case null { #err("Photo not found") };
       case (?photo) {
         let newComment : Comment = {
-          author = null;
+          username = username;
           content = content;
           timestamp = Time.now();
         };
         let updatedPhoto = {
           id = photo.id;
+          username = photo.username;
           title = photo.title;
           category = photo.category;
           url = photo.url;
