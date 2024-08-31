@@ -1,8 +1,10 @@
+console.log("index.js loaded");
+
 // Initialize the agent
 const agent = new window.ic.HttpAgent();
-const backend = window.ic.createActor("backend", {
+const backend = window.ic.createActor("rrkah-fqaaa-aaaaa-aaaaq-cai", {
   agent,
-  canisterId: "<YOUR_BACKEND_CANISTER_ID>"
+  canisterId: "rrkah-fqaaa-aaaaa-aaaaq-cai"
 });
 
 // DOM elements
@@ -14,7 +16,10 @@ const uploadForm = document.getElementById('uploadForm');
 const menuItems = document.querySelectorAll('.menu-item');
 
 // Event listeners
-postBtn.onclick = () => modal.style.display = "block";
+postBtn.onclick = () => {
+  console.log("Post button clicked");
+  modal.style.display = "block";
+};
 closeBtn.onclick = () => modal.style.display = "none";
 window.onclick = (event) => {
   if (event.target == modal) {
@@ -50,12 +55,16 @@ menuItems.forEach(item => {
 
 async function fetchPhotos(category = 'all') {
   let photos;
-  if (category === 'all') {
-    photos = await backend.getPhotos();
-  } else {
-    photos = await backend.getPhotosByCategory(category);
+  try {
+    if (category === 'all') {
+      photos = await backend.getPhotos();
+    } else {
+      photos = await backend.getPhotosByCategory(category);
+    }
+    renderPhotos(photos);
+  } catch (error) {
+    console.error('Error fetching photos:', error);
   }
-  renderPhotos(photos);
 }
 
 function renderPhotos(photos) {
