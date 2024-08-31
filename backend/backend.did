@@ -1,0 +1,32 @@
+type Result_1 = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type Photo = 
+ record {
+   category: text;
+   comments: vec Comment;
+   id: nat;
+   likes: nat;
+   timestamp: int;
+   title: text;
+   url: text;
+ };
+type Comment = 
+ record {
+   author: opt text;
+   content: text;
+   timestamp: int;
+ };
+service : {
+  addComment: (nat, text) -> (Result);
+  addPhoto: (text, text, text) -> (Result_1);
+  getPhotos: () -> (vec Photo) query;
+  likePhoto: (nat) -> (Result);
+}
